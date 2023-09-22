@@ -9,3 +9,38 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Table {
+  id       Int @id @default(autoincrement())
+  capacity Int
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model User {
+  id       String @id @default(uuid())
+  name     String
+  email    String @unique
+  password String
+  role     Role
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Reservation {
+  id       String   @id @default(uuid())
+  user_id  String
+  table_id Int
+  to_date  DateTime
+  active   Boolean  @default(true)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+}
