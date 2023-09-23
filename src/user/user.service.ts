@@ -46,8 +46,22 @@ export class UserService {
     return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    if (updateUserDto.password) {
+      const salt = await bcrypt.genSalt();
+      const hashPassword = await bcrypt.hash(updateUserDto.password, salt);
+
+      updateUserDto.password = hashPassword;
+    }
+
+    const user = await this.prisma.user.update({
+      where: {id},
+      data: updateUserDto
+    })
+
+    if (!user) throw new NotFoundException();
+
+    return user;
   }
 
   remove(id: number) {
