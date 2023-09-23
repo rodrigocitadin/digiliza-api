@@ -13,20 +13,23 @@ export class UserService {
 
     if (userAlreadyExists) throw new BadRequestException("User with this email already exists");
 
-    const salt = await bcrypt.genSalt();
-    const hashPassword = await bcrypt.hash(createUserDto.password, salt);
+    createUserDto.password = await this.hashPassword(createUserDto.password);
 
-    createUserDto.password = hashPassword;
+    try {
+      const user = await this.prisma.user.create({
+        data: createUserDto,
+      })
 
-    const user = await this.prisma.user.create({
-      data: createUserDto,
-    })
-
-    return user;
+      return user;
+    }
+    catch (error) {
+      throw new BadRequestException(error.name);
+    }
   }
 
   async findAll() {
     const users = await this.prisma.user.findMany();
+
     return users;
   }
 
@@ -35,20 +38,14 @@ export class UserService {
       where: { id }
     })
 
-    if (!user) throw new NotFoundException();
-
-    return user;
-  }
-
-  async findByEmail(email: string) {
-    const user = await this.prisma.user.findFirst({
-      where: { email }
-    })
+    if (!user) throw new NotFoundException("User not found");
 
     return user;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
+    await this.findById(id);
+
     if (updateUserDto.password) {
       const salt = await bcrypt.genSalt();
       const hashPassword = await bcrypt.hash(updateUserDto.password, salt);
@@ -56,19 +53,36 @@ export class UserService {
       updateUserDto.password = hashPassword;
     }
 
-    const user = await this.prisma.user.update({
-      where: { id },
-      data: updateUserDto
-    })
+    try {
+      const user = await this.prisma.user.update({
+        where: { id },
+        data: updateUserDto
+      })
 
-    if (!user) throw new NotFoundException();
+      return user;
+    }
+    catch (error) {
+      throw new BadRequestException(error.name);
+    }
+  }
+
+  async remove(id: string) {
+    await this.findById(id)
+    await this.prisma.user.delete({ where: { id } });
+  }
+
+  private async findByEmail(email: string) {
+    const user = await this.prisma.user.findFirst({
+      where: { email }
+    })
 
     return user;
   }
 
-  async remove(id: string) {
-    const user = await this.prisma.user.delete({ where: { id } });
+  private async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(password, salt);
 
-    if (!user) throw new NotFoundException();
+    return hashPassword;
   }
 }
