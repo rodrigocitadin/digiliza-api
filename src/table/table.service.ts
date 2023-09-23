@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTableDto } from './dto/create-table.dto';
+import { UpdateTableDto } from './dto/update-table.dto';
 
 @Injectable()
 export class TableService {
@@ -33,5 +34,21 @@ export class TableService {
     if (!table) throw new NotFoundException("Table not found");
 
     return table;
+  }
+
+  async update(id: number, updateTableDto: UpdateTableDto) {
+    await this.findById(id);
+
+    try {
+      const table = await this.prisma.table.update({
+        where: { id },
+        data: updateTableDto
+      })
+
+      return table;
+    }
+    catch (error) {
+      throw new BadRequestException(error.name);
+    }
   }
 }
