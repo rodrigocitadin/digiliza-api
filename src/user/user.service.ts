@@ -8,6 +8,11 @@ import * as bcrypt from 'bcrypt';
 export class UserService {
   constructor(private prisma: PrismaService) { }
 
+  private returnUser = {
+    name: true,
+    email: true
+  }
+
   async create(createUserDto: CreateUserDto) {
     const userAlreadyExists = await this.findByEmail(createUserDto.email);
 
@@ -18,6 +23,7 @@ export class UserService {
     try {
       const user = await this.prisma.user.create({
         data: createUserDto,
+        select: this.returnUser
       })
 
       return user;
