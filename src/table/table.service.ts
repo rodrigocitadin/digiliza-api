@@ -8,6 +8,9 @@ export class TableService {
   constructor(private prisma: PrismaService) { }
 
   async create(createTableDto: CreateTableDto) {
+    const tables = await this.findAll();
+    if (tables.length >= 15) throw new BadRequestException("Maximum tables reached")
+
     try {
       const table = await this.prisma.table.create({
         data: createTableDto
