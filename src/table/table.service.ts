@@ -18,4 +18,10 @@ export class TableService {
       throw new BadRequestException(error.name);
     }
   }
+
+  async findAll() {
+    const tables = await this.prisma.table.findMany();
+
+    return tables;
+  }
 }
