@@ -55,7 +55,7 @@ export class UserService {
     }
 
     const user = await this.prisma.user.update({
-      where: {id},
+      where: { id },
       data: updateUserDto
     })
 
@@ -64,7 +64,9 @@ export class UserService {
     return user;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    const user = await this.prisma.user.delete({ where: { id } });
+
+    if (!user) throw new NotFoundException();
   }
 }
