@@ -10,6 +10,7 @@ export class UserService {
   constructor(private prisma: PrismaService) { }
 
   private returnUser = {
+    id: true,
     name: true,
     email: true
   }
