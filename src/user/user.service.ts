@@ -3,6 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
+import { ReturnUserDto } from './dto/return-user.dto';
 
 @Injectable()
 export class UserService {
@@ -13,7 +14,7 @@ export class UserService {
     email: true
   }
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<ReturnUserDto> {
     const userAlreadyExists = await this.findByEmail(createUserDto.email);
 
     if (userAlreadyExists) throw new BadRequestException("User with this email already exists");
