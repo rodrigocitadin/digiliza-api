@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTableDto } from './dto/create-table.dto';
 
@@ -23,5 +23,15 @@ export class TableService {
     const tables = await this.prisma.table.findMany();
 
     return tables;
+  }
+
+  async findById(id: number) {
+    const table = await this.prisma.table.findFirst({
+      where: { id }
+    })
+
+    if (!table) throw new NotFoundException("Table not found");
+
+    return table;
   }
 }
