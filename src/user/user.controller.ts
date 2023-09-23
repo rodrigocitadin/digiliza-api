@@ -9,7 +9,8 @@ export class UserController {
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
-    return await this.userService.create(createUserDto);
+    const user = await this.userService.create(createUserDto);
+    return user;
   }
 
   @Get()
@@ -19,16 +20,18 @@ export class UserController {
 
   @Get(':id')
   async findById(@Param('id') id: string) {
-    return await this.userService.findById(id);
+    const user = await this.userService.findById(id);
+    return user;
   }
 
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return await this.userService.update(id, updateUserDto);
+    const user = await this.userService.update(id, updateUserDto);
+    return user;
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return await this.userService.remove(id);
+    await this.userService.remove(id);
   }
 }
