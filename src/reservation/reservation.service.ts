@@ -14,6 +14,15 @@ export class ReservationService {
   ) { }
 
   async create(createReservationDto: CreateReservationDto) {
+    const day = createReservationDto.to_date.getDay();
+    const totalTime = this.totalTime(createReservationDto.to_date);
+    const startTime = 1800;
+    const finishTime = 2359;
+    
+    const legalTime = totalTime >= startTime && totalTime <= finishTime;
+
+    if (day === 0 || !legalTime) throw new BadRequestException("We are not open for new reservations")
+
     await this.userService.findById(createReservationDto.user_id);
     await this.tableService.findById(createReservationDto.table_id);
 
