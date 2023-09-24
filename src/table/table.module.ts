@@ -6,6 +6,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 @Module({
   controllers: [TableController],
   providers: [TableService],
-  imports: [PrismaModule]
+  imports: [PrismaModule],
+  exports: [TableService]
 })
 export class TableModule {}
