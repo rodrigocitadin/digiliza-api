@@ -20,16 +20,11 @@ export class ReservationService {
 
     const yearMonthDay = this.generateYearMonthDay(createReservationDto.date);
 
-    const reservations = await this.prisma.reservation.findMany({
-      where: {
-        table_id: createReservationDto.table_id,
-        active: true,
-        date: {
-          lte: new Date(`${yearMonthDay}, 23:59:59`),
-          gte: new Date(`${yearMonthDay}, 18:00:00`)
-        }
-      }
-    })
+    const reservations = await this.verifyTables(
+      createReservationDto.table_id,
+      true,
+      yearMonthDay
+    );
 
     if (reservations.length) throw new BadRequestException("This table is currently unavailable");
 
@@ -106,5 +101,20 @@ export class ReservationService {
     const year = date.getFullYear();
 
     return `${year}-${month}-${dayMonth}`
+  }
+
+  async verifyTables(id: number, active: boolean, yearMonthDay: string) {
+    const reservations = await this.prisma.reservation.findMany({
+      where: {
+        table_id: id,
+        active: active,
+        date: {
+          lte: new Date(`${yearMonthDay}, 23:59:59`),
+          gte: new Date(`${yearMonthDay}, 18:00:00`)
+        }
+      }
+    })
+
+    return reservations;
   }
 }
