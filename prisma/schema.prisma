@@ -39,7 +39,8 @@ model Reservation {
   user     User     @relation(fields: [user_id], references: [id])
   table_id Int
   table    Table    @relation(fields: [table_id], references: [id])
-  to_date  DateTime
+  date     DateTime @db.Date
+  hour     Int
   active   Boolean  @default(true)
 
   created_at DateTime @default(now())

@@ -14,37 +14,32 @@ export class ReservationService {
   ) { }
 
   async create(createReservationDto: CreateReservationDto) {
-    createReservationDto.to_date = new Date(createReservationDto.to_date);
+    createReservationDto.date = new Date(createReservationDto.date);
 
-    // const dayMonth = createReservationDto.to_date.getDate();
-    // const month = createReservationDto.to_date.getMonth();
-    // const year = createReservationDto.to_date.getFullYear();
+    const dayMonth = createReservationDto.date.getDate();
+    const month = createReservationDto.date.getMonth();
+    const year = createReservationDto.date.getFullYear();
 
-    const day = createReservationDto.to_date.getDay();
-    const totalTime = this.totalTime(createReservationDto.to_date);
-    const startTime = 1800;
-    const finishTime = 2359;
+    const day = createReservationDto.date.getDay();
+    const startHours = 18;
+    const finishHours = 23;
 
-    const legalTime = totalTime >= startTime && totalTime <= finishTime;
+    const legalTime = createReservationDto.hour >= startHours && createReservationDto.hour <= finishHours;
 
     if (day === 0 || !legalTime) throw new BadRequestException("We are not open for new reservations")
 
-    // const reservations = await this.prisma.reservation.findMany({
-    //   where: {
-    //     table_id: createReservationDto.table_id,
-    //     to_date: {
-    //       lte: new Date(`${year}-${month}-${dayMonth}`).toISOString(),
-    //       gte: new Date(`${year}-${month}-${dayMonth + 1}`).toISOString()
-    //     }
-    //   },
-    //   select: {
-    //     active: true
-    //   }
-    // })
+    const reservations = await this.prisma.reservation.findMany({
+      where: {
+        table_id: createReservationDto.table_id,
+        active: true,
+        date: new Date(`${year}-${month + 1}-${dayMonth + 1}`)
+      }
+    })
 
-    // const anyActive = reservations.includes({ active: true });
+    console.log(`${year}-${month}-${dayMonth}`);
+    console.log(reservations);
 
-    // if (anyActive) throw new BadRequestException("This table is currently unavailable");
+    if (reservations.length) throw new BadRequestException("This table is currently unavailable");
 
     await this.userService.findById(createReservationDto.user_id);
     await this.tableService.findById(createReservationDto.table_id);
@@ -96,14 +91,5 @@ export class ReservationService {
   async remove(id: string) {
     await this.findById(id);
     await this.prisma.reservation.delete({ where: { id } });
-  }
-
-  private totalTime(time: Date): number {
-    const hours: string = time.getHours().toString();
-    const minutes: string = time.getMinutes().toString();
-
-    const sumTime: number = Number(hours + minutes);
-
-    return sumTime;
   }
 }

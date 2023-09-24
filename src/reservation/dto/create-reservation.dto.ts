@@ -11,7 +11,11 @@ export class CreateReservationDto {
 
   @IsDate()
   @IsNotEmpty()
-  to_date: Date;
+  date: Date;
+
+  @IsNumber()
+  @IsNotEmpty()
+  hour: number;
 
   @IsBoolean()
   @IsOptional()
