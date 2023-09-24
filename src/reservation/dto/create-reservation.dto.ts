@@ -11,11 +11,7 @@ export class CreateReservationDto {
 
   @IsDate()
   @IsNotEmpty()
-  initial_date: Date;
-
-  @IsDate()
-  @IsNotEmpty()
-  final_date: Date;
+  to_date: Date;
 
   @IsBoolean()
   @IsOptional()
