@@ -17,14 +17,15 @@ export class ReservationService {
     createReservationDto.date = new Date(createReservationDto.date);
 
     const dayMonth = createReservationDto.date.getDate();
-    const month = createReservationDto.date.getMonth();
+    const month = createReservationDto.date.getMonth() + 1;
     const year = createReservationDto.date.getFullYear();
 
     const day = createReservationDto.date.getDay();
+    const hours = createReservationDto.date.getHours();
     const startHours = 18;
     const finishHours = 23;
 
-    const legalTime = createReservationDto.hour >= startHours && createReservationDto.hour <= finishHours;
+    const legalTime = hours >= startHours && hours <= finishHours;
 
     if (day === 0 || !legalTime) throw new BadRequestException("We are not open for new reservations")
 
@@ -32,12 +33,12 @@ export class ReservationService {
       where: {
         table_id: createReservationDto.table_id,
         active: true,
-        date: new Date(`${year}-${month + 1}-${dayMonth + 1}`)
+        date: {
+          lte: new Date(`${year}-${month}-${dayMonth}, 23:59:59`),
+          gte: new Date(`${year}-${month}-${dayMonth}, 18:00:00`)
+        }
       }
     })
-
-    console.log(`${year}-${month}-${dayMonth}`);
-    console.log(reservations);
 
     if (reservations.length) throw new BadRequestException("This table is currently unavailable");
 
