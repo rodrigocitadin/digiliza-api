@@ -61,7 +61,8 @@ export class ReservationService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} reservation`;
+  async remove(id: string) {
+    await this.findById(id);
+    await this.prisma.reservation.delete({ where: { id } });
   }
 }
