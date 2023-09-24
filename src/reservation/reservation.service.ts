@@ -16,18 +16,11 @@ export class ReservationService {
   async create(createReservationDto: CreateReservationDto) {
     createReservationDto.date = new Date(createReservationDto.date);
 
+    this.verifyTime(createReservationDto.date);
+
     const dayMonth = createReservationDto.date.getDate();
     const month = createReservationDto.date.getMonth() + 1;
     const year = createReservationDto.date.getFullYear();
-
-    const day = createReservationDto.date.getDay();
-    const hours = createReservationDto.date.getHours();
-    const startHours = 18;
-    const finishHours = 23;
-
-    const legalTime = hours >= startHours && hours <= finishHours;
-
-    if (day === 0 || !legalTime) throw new BadRequestException("We are not open for new reservations")
 
     const reservations = await this.prisma.reservation.findMany({
       where: {
@@ -92,5 +85,16 @@ export class ReservationService {
   async remove(id: string) {
     await this.findById(id);
     await this.prisma.reservation.delete({ where: { id } });
+  }
+
+  private verifyTime(date: Date) {
+    const day = date.getDay();
+    const hours = date.getHours();
+    const startHours = 18;
+    const finishHours = 23;
+
+    const legalTime = hours >= startHours && hours <= finishHours;
+
+    if (day === 0 || !legalTime) throw new BadRequestException("We are not open for new reservations")
   }
 }
