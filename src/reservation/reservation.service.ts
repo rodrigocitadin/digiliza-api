@@ -66,6 +66,15 @@ export class ReservationService {
       this.verifyTime(updateReservationDto.date);
     }
 
+    if (updateReservationDto.table_id) {
+      if (!updateReservationDto.date) throw new BadRequestException("To change the table ID you need to provide a date");
+
+      const ymd = this.generateYearMonthDay(updateReservationDto.date);
+      const newTableAvailable = this.verifyTables(updateReservationDto.table_id, false, ymd);
+
+      if (!newTableAvailable) throw new BadRequestException("This table is currently unavailable");
+    }
+
     try {
       const reservation = await this.prisma.reservation.update({
         where: { id },
@@ -103,10 +112,10 @@ export class ReservationService {
     return `${year}-${month}-${dayMonth}`
   }
 
-  async verifyTables(id: number, active: boolean, yearMonthDay: string) {
+  async verifyTables(table_id: number, active: boolean, yearMonthDay: string) {
     const reservations = await this.prisma.reservation.findMany({
       where: {
-        table_id: id,
+        table_id: table_id,
         active: active,
         date: {
           lte: new Date(`${yearMonthDay}, 23:59:59`),
