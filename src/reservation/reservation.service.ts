@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -35,8 +35,14 @@ export class ReservationService {
     return reservations;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} reservation`;
+  async findOne(id: string) {
+    const reservation = await this.prisma.reservation.findFirst({
+      where: { id }
+    })
+
+    if (!reservation) throw new NotFoundException("Reservation not found");
+
+    return reservation;
   }
 
   update(id: number, updateReservationDto: UpdateReservationDto) {
