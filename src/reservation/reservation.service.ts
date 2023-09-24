@@ -14,14 +14,37 @@ export class ReservationService {
   ) { }
 
   async create(createReservationDto: CreateReservationDto) {
+    createReservationDto.to_date = new Date(createReservationDto.to_date);
+
+    // const dayMonth = createReservationDto.to_date.getDate();
+    // const month = createReservationDto.to_date.getMonth();
+    // const year = createReservationDto.to_date.getFullYear();
+
     const day = createReservationDto.to_date.getDay();
     const totalTime = this.totalTime(createReservationDto.to_date);
     const startTime = 1800;
     const finishTime = 2359;
-    
+
     const legalTime = totalTime >= startTime && totalTime <= finishTime;
 
     if (day === 0 || !legalTime) throw new BadRequestException("We are not open for new reservations")
+
+    // const reservations = await this.prisma.reservation.findMany({
+    //   where: {
+    //     table_id: createReservationDto.table_id,
+    //     to_date: {
+    //       lte: new Date(`${year}-${month}-${dayMonth}`).toISOString(),
+    //       gte: new Date(`${year}-${month}-${dayMonth + 1}`).toISOString()
+    //     }
+    //   },
+    //   select: {
+    //     active: true
+    //   }
+    // })
+
+    // const anyActive = reservations.includes({ active: true });
+
+    // if (anyActive) throw new BadRequestException("This table is currently unavailable");
 
     await this.userService.findById(createReservationDto.user_id);
     await this.tableService.findById(createReservationDto.table_id);

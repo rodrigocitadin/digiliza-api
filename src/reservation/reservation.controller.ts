@@ -17,18 +17,18 @@ export class ReservationController {
     return this.reservationService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.reservationService.findById(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.reservationService.findById(+id);
+  // }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateReservationDto: UpdateReservationDto) {
-    return this.reservationService.update(+id, updateReservationDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateReservationDto: UpdateReservationDto) {
+  //   return this.reservationService.update(+id, updateReservationDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reservationService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.reservationService.remove(+id);
+  // }
 }
