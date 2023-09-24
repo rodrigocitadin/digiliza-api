@@ -16,8 +16,8 @@ model Table {
 
   Reservation Reservation[]
 
-  created_at  DateTime      @default(now())
-  updated_at  DateTime      @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model User {
@@ -29,18 +29,19 @@ model User {
 
   Reservation Reservation[]
 
-  created_at  DateTime      @default(now())
-  updated_at  DateTime      @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model Reservation {
-  id       String   @id @default(uuid())
-  user_id  String
-  user     User     @relation(fields: [user_id], references: [id])
-  table_id Int
-  table    Table    @relation(fields: [table_id], references: [id])
-  to_date  DateTime
-  active   Boolean  @default(true)
+  id           String   @id @default(uuid())
+  user_id      String
+  user         User     @relation(fields: [user_id], references: [id])
+  table_id     Int
+  table        Table    @relation(fields: [table_id], references: [id])
+  initial_date DateTime
+  final_date   DateTime
+  active       Boolean  @default(true)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
