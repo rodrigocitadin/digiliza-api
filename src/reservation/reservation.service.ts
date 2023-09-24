@@ -18,17 +18,15 @@ export class ReservationService {
 
     this.verifyTime(createReservationDto.date);
 
-    const dayMonth = createReservationDto.date.getDate();
-    const month = createReservationDto.date.getMonth() + 1;
-    const year = createReservationDto.date.getFullYear();
+    const yearMonthDay = this.generateYearMonthDay(createReservationDto.date);
 
     const reservations = await this.prisma.reservation.findMany({
       where: {
         table_id: createReservationDto.table_id,
         active: true,
         date: {
-          lte: new Date(`${year}-${month}-${dayMonth}, 23:59:59`),
-          gte: new Date(`${year}-${month}-${dayMonth}, 18:00:00`)
+          lte: new Date(`${yearMonthDay}, 23:59:59`),
+          gte: new Date(`${yearMonthDay}, 18:00:00`)
         }
       }
     })
@@ -96,5 +94,13 @@ export class ReservationService {
     const legalTime = hours >= startHours && hours <= finishHours;
 
     if (day === 0 || !legalTime) throw new BadRequestException("We are not open for new reservations")
+  }
+
+  private generateYearMonthDay(date: Date): string {
+    const dayMonth = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+
+    return `${year}-${month}-${dayMonth}`
   }
 }
