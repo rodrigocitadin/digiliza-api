@@ -20,7 +20,7 @@ export class ReservationService {
 
     const ymd = this.generateYearMonthDay(createReservationDto.date);
 
-    const previousReservation = await this.verifyTables(createReservationDto.table_id, true, ymd);
+    const previousReservation = await this.verifyTables(createReservationDto.table_id, ymd);
 
     if (previousReservation) throw new BadRequestException("This table is currently unavailable");
 
@@ -56,7 +56,7 @@ export class ReservationService {
   }
 
   async update(id: string, updateReservationDto: UpdateReservationDto) {
-    await this.findById(id);
+    const previousReservation = await this.findById(id);
 
     if (updateReservationDto.date) {
       updateReservationDto.date = new Date(updateReservationDto.date)
@@ -64,12 +64,12 @@ export class ReservationService {
     }
 
     if (updateReservationDto.table_id) {
-      if (!updateReservationDto.date) throw new BadRequestException("To change the table ID you need to provide a date");
+      if (!updateReservationDto.date) updateReservationDto.date = previousReservation.date;
 
       const ymd = this.generateYearMonthDay(updateReservationDto.date);
-      const newTableAvailable = this.verifyTables(updateReservationDto.table_id, false, ymd);
+      const tableUnavailable = await this.verifyTables(updateReservationDto.table_id, ymd);
 
-      if (!newTableAvailable) throw new BadRequestException("This table is currently unavailable");
+      if (tableUnavailable) throw new BadRequestException("This table is currently unavailable");
     }
 
     try {
@@ -109,11 +109,11 @@ export class ReservationService {
     return `${year}-${month}-${dayMonth}`
   }
 
-  async verifyTables(table_id: number, active: boolean, yearMonthDay: string) {
+  async verifyTables(table_id: number, yearMonthDay: string) {
     const reservations = await this.prisma.reservation.findFirst({
       where: {
         table_id: table_id,
-        active: active,
+        active: true,
         date: {
           lte: new Date(`${yearMonthDay}, 23:59:59`),
           gte: new Date(`${yearMonthDay}, 18:00:00`)
