@@ -29,8 +29,10 @@ export class ReservationService {
     }
   }
 
-  findAll() {
-    return `This action returns all reservation`;
+  async findAll() {
+    const reservations = await this.prisma.reservation.findMany();
+
+    return reservations;
   }
 
   findOne(id: number) {
