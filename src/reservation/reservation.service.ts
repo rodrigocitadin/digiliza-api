@@ -35,7 +35,7 @@ export class ReservationService {
     return reservations;
   }
 
-  async findOne(id: string) {
+  async findById(id: string) {
     const reservation = await this.prisma.reservation.findFirst({
       where: { id }
     })
@@ -45,8 +45,20 @@ export class ReservationService {
     return reservation;
   }
 
-  update(id: number, updateReservationDto: UpdateReservationDto) {
-    return `This action updates a #${id} reservation`;
+  async update(id: string, updateReservationDto: UpdateReservationDto) {
+    await this.findById(id);
+
+    try {
+      const reservation = await this.prisma.reservation.update({
+        where: { id },
+        data: updateReservationDto
+      })
+
+      return reservation;
+    }
+    catch (error) {
+      throw new BadRequestException(error.name);
+    }
   }
 
   remove(id: number) {
