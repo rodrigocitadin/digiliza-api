@@ -19,10 +19,12 @@ export class ReservationController {
     return this.reservationService.findAll();
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.reservationService.findById(+id);
-  // }
+  @Get(':id')
+  async findById(@Param('id') id: string) {
+    const reservation = await this.reservationService.findById(id);
+
+    return reservation;
+  }
 
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateReservationDto: UpdateReservationDto) {
@@ -31,8 +33,8 @@ export class ReservationController {
     return reservation;
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.reservationService.remove(+id);
-  // }
+  @Delete(':id')
+  async remove(@Param('id') id: string) {
+    await this.reservationService.remove(id);
+  }
 }
