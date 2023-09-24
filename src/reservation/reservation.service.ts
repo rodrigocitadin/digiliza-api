@@ -18,15 +18,11 @@ export class ReservationService {
 
     this.verifyTime(createReservationDto.date);
 
-    const yearMonthDay = this.generateYearMonthDay(createReservationDto.date);
+    const ymd = this.generateYearMonthDay(createReservationDto.date);
 
-    const reservations = await this.verifyTables(
-      createReservationDto.table_id,
-      true,
-      yearMonthDay
-    );
+    const previousReservation = await this.verifyTables(createReservationDto.table_id, true, ymd);
 
-    if (reservations.length) throw new BadRequestException("This table is currently unavailable");
+    if (previousReservation) throw new BadRequestException("This table is currently unavailable");
 
     await this.userService.findById(createReservationDto.user_id);
     await this.tableService.findById(createReservationDto.table_id);
@@ -63,6 +59,7 @@ export class ReservationService {
     await this.findById(id);
 
     if (updateReservationDto.date) {
+      updateReservationDto.date = new Date(updateReservationDto.date)
       this.verifyTime(updateReservationDto.date);
     }
 
@@ -113,7 +110,7 @@ export class ReservationService {
   }
 
   async verifyTables(table_id: number, active: boolean, yearMonthDay: string) {
-    const reservations = await this.prisma.reservation.findMany({
+    const reservations = await this.prisma.reservation.findFirst({
       where: {
         table_id: table_id,
         active: active,

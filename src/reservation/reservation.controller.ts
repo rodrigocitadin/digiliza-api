@@ -8,8 +8,10 @@ export class ReservationController {
   constructor(private readonly reservationService: ReservationService) {}
 
   @Post()
-  create(@Body() createReservationDto: CreateReservationDto) {
-    return this.reservationService.create(createReservationDto);
+  async create(@Body() createReservationDto: CreateReservationDto) {
+    const reservation = await this.reservationService.create(createReservationDto);
+
+    return reservation;
   }
 
   @Get()
@@ -22,10 +24,12 @@ export class ReservationController {
   //   return this.reservationService.findById(+id);
   // }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateReservationDto: UpdateReservationDto) {
-  //   return this.reservationService.update(+id, updateReservationDto);
-  // }
+  @Patch(':id')
+  async update(@Param('id') id: string, @Body() updateReservationDto: UpdateReservationDto) {
+    const reservation = await this.reservationService.update(id, updateReservationDto);
+
+    return reservation;
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {
