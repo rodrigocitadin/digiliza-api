@@ -67,6 +67,10 @@ export class ReservationService {
   async update(id: string, updateReservationDto: UpdateReservationDto) {
     await this.findById(id);
 
+    if (updateReservationDto.date) {
+      this.verifyTime(updateReservationDto.date);
+    }
+
     try {
       const reservation = await this.prisma.reservation.update({
         where: { id },
