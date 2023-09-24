@@ -65,4 +65,13 @@ export class ReservationService {
     await this.findById(id);
     await this.prisma.reservation.delete({ where: { id } });
   }
+
+  private totalTime(time: Date): number {
+    const hours: string = time.getHours().toString();
+    const minutes: string = time.getMinutes().toString();
+
+    const sumTime: number = Number(hours + minutes);
+
+    return sumTime;
+  }
 }
