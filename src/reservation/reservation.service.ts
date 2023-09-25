@@ -4,6 +4,7 @@ import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { TableService } from 'src/table/table.service';
+import { ReturnReservationDto } from './dto/return-reservation.dto';
 
 @Injectable()
 export class ReservationService {
@@ -13,7 +14,15 @@ export class ReservationService {
     private tableService: TableService
   ) { }
 
-  async create(createReservationDto: CreateReservationDto) {
+  private returnReservation = {
+    id: true,
+    user_id: true,
+    table_id: true,
+    active: true,
+    date: true
+  }
+
+  async create(createReservationDto: CreateReservationDto): Promise<ReturnReservationDto> {
     createReservationDto.date = new Date(createReservationDto.date);
 
     this.verifyTime(createReservationDto.date);
@@ -29,7 +38,8 @@ export class ReservationService {
 
     try {
       const reservation = await this.prisma.reservation.create({
-        data: createReservationDto
+        data: createReservationDto,
+        select: this.returnReservation
       })
 
       return reservation;
@@ -39,15 +49,18 @@ export class ReservationService {
     }
   }
 
-  async findAll() {
-    const reservations = await this.prisma.reservation.findMany();
+  async findAll(): Promise<ReturnReservationDto[]> {
+    const reservations = await this.prisma.reservation.findMany({
+      select: this.returnReservation
+    });
 
     return reservations;
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<ReturnReservationDto> {
     const reservation = await this.prisma.reservation.findFirst({
-      where: { id }
+      where: { id },
+      select: this.returnReservation
     })
 
     if (!reservation) throw new NotFoundException("Reservation not found");
@@ -55,7 +68,7 @@ export class ReservationService {
     return reservation;
   }
 
-  async update(id: string, updateReservationDto: UpdateReservationDto) {
+  async update(id: string, updateReservationDto: UpdateReservationDto): Promise<ReturnReservationDto> {
     const previousReservation = await this.findById(id);
 
     if (updateReservationDto.date) {
@@ -75,7 +88,8 @@ export class ReservationService {
     try {
       const reservation = await this.prisma.reservation.update({
         where: { id },
-        data: updateReservationDto
+        data: updateReservationDto,
+        select: this.returnReservation
       })
 
       return reservation;
@@ -85,12 +99,12 @@ export class ReservationService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<void> {
     await this.findById(id);
     await this.prisma.reservation.delete({ where: { id } });
   }
 
-  private verifyTime(date: Date) {
+  private verifyTime(date: Date): void {
     const day = date.getDay();
     const hours = date.getHours();
     const startHours = 18;
@@ -109,7 +123,7 @@ export class ReservationService {
     return `${year}-${month}-${dayMonth}`
   }
 
-  async verifyTables(table_id: number, yearMonthDay: string) {
+  async verifyTables(table_id: number, yearMonthDay: string): Promise<ReturnReservationDto | void> {
     const reservations = await this.prisma.reservation.findFirst({
       where: {
         table_id: table_id,
