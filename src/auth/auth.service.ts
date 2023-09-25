@@ -25,7 +25,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user: Omit<User, "password">) {
+  async login(user: Pick<User, "id" | "email">) {
     const payload = { email: user.email, sub: user.id };
 
     return {
