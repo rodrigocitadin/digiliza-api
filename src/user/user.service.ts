@@ -36,14 +36,17 @@ export class UserService {
   }
 
   async findAll() {
-    const users = await this.prisma.user.findMany();
+    const users = await this.prisma.user.findMany({
+      select: this.returnUser
+    });
 
     return users;
   }
 
   async findById(id: string) {
     const user = await this.prisma.user.findFirst({
-      where: { id }
+      where: { id },
+      select: this.returnUser
     })
 
     if (!user) throw new NotFoundException("User not found");
@@ -64,7 +67,8 @@ export class UserService {
     try {
       const user = await this.prisma.user.update({
         where: { id },
-        data: updateUserDto
+        data: updateUserDto,
+        select: this.returnUser
       })
 
       return user;
