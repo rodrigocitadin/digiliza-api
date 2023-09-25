@@ -2,18 +2,25 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
+import { ReturnTableDto } from './dto/return-table.dto';
 
 @Injectable()
 export class TableService {
   constructor(private prisma: PrismaService) { }
 
-  async create(createTableDto: CreateTableDto) {
+  private returnTable = {
+    id: true,
+    capacity: true
+  }
+
+  async create(createTableDto: CreateTableDto): Promise<ReturnTableDto> {
     const tables = await this.findAll();
     if (tables.length >= 15) throw new BadRequestException("Maximum tables reached")
 
     try {
       const table = await this.prisma.table.create({
-        data: createTableDto
+        data: createTableDto,
+        select: this.returnTable
       })
 
       return table;
@@ -23,15 +30,18 @@ export class TableService {
     }
   }
 
-  async findAll() {
-    const tables = await this.prisma.table.findMany();
+  async findAll(): Promise<ReturnTableDto[]> {
+    const tables = await this.prisma.table.findMany({
+      select: this.returnTable
+    });
 
     return tables;
   }
 
-  async findById(id: number) {
+  async findById(id: number): Promise<ReturnTableDto> {
     const table = await this.prisma.table.findFirst({
-      where: { id }
+      where: { id },
+      select: this.returnTable
     })
 
     if (!table) throw new NotFoundException("Table not found");
@@ -39,13 +49,14 @@ export class TableService {
     return table;
   }
 
-  async update(id: number, updateTableDto: UpdateTableDto) {
+  async update(id: number, updateTableDto: UpdateTableDto): Promise<ReturnTableDto> {
     await this.findById(id);
 
     try {
       const table = await this.prisma.table.update({
         where: { id },
-        data: updateTableDto
+        data: updateTableDto,
+        select: this.returnTable
       })
 
       return table;
@@ -55,7 +66,7 @@ export class TableService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<void> {
     await this.findById(id)
     await this.prisma.table.delete({ where: { id } });
   }
