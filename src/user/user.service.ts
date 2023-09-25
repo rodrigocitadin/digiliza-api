@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { ReturnUserDto } from './dto/return-user.dto';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -35,7 +36,7 @@ export class UserService {
     }
   }
 
-  async findAll() {
+  async findAll(): Promise<ReturnUserDto[]> {
     const users = await this.prisma.user.findMany({
       select: this.returnUser
     });
@@ -43,7 +44,7 @@ export class UserService {
     return users;
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<ReturnUserDto> {
     const user = await this.prisma.user.findFirst({
       where: { id },
       select: this.returnUser
@@ -54,7 +55,7 @@ export class UserService {
     return user;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<ReturnUserDto> {
     await this.findById(id);
 
     if (updateUserDto.password) {
@@ -78,12 +79,12 @@ export class UserService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<void> {
     await this.findById(id)
     await this.prisma.user.delete({ where: { id } });
   }
 
-  private async findByEmail(email: string) {
+  private async findByEmail(email: string): Promise<User> {
     const user = await this.prisma.user.findFirst({
       where: { email }
     })
