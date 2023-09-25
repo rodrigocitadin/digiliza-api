@@ -98,4 +98,14 @@ export class UserService {
 
     return hashPassword;
   }
+
+  async findToLogin(email: string): Promise<User> {
+    const user = await this.prisma.user.findFirst({
+      where: { email }
+    })
+
+    if (!user) throw new NotFoundException("User with this email not found")
+
+    return user;
+  }
 }
