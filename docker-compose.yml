@@ -1,8 +1,20 @@
 version: '2.0'
 
 services:
+  api:
+    container_name: restaurant_api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - database
+    env_file:
+      - .env
+
   database:
-    container_name: digiliza_api
+    container_name: restaurant_db
     image: postgres:13
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
@@ -10,3 +22,6 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "${DB_PORT}:${DB_PORT}"
+    env_file:
+      - .env
+
