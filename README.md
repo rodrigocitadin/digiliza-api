@@ -3,7 +3,12 @@
 first, clone the repo:
 
 ```sh
-git clone https://github.com/rodrigocitadin/restaurant-api
+git clone https://github.com/rodrigocitadin/restaurant-api && cd restaurant-api
+```
+
+then run the docker compose
+```sh
+docker compose up
 ```
 
 ## System resume
