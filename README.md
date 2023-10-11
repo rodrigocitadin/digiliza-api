@@ -6,6 +6,11 @@ first, clone the repo:
 git clone https://github.com/rodrigocitadin/restaurant-api && cd restaurant-api
 ```
 
+copy .env
+```sh
+cp .env.example .env
+```
+
 then run the docker compose
 ```sh
 docker compose up
