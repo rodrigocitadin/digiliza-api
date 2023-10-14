@@ -67,3 +67,4 @@ to create a reservation, you need to be logged (bearer token) and inform your id
 - Admin panel
 - Better time checker
 - Tests
+- Front-end
