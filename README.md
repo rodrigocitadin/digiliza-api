@@ -23,6 +23,8 @@ docker compose up
 - you cannot reserve the table if you have any other reservation at the same time
 - we have 15 tables available in the system
 
+***All endpoints except create user and auth you must be logged in (bearer token)***
+
 ## User
 
 to create a user, you need to inform your name, email, and password. Email must be unique
@@ -50,7 +52,7 @@ to authenticate a user, you need to inform your email and password
 
 ## Reservation
 
-to create a reservation, you need to be logged (bearer token) and inform your id, table id, and the date
+to create a reservation, you need to be logged and inform your id, table id, and the date
 
 **POST** `localhost:3000/reservation`
 
