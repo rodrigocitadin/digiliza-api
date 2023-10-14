@@ -50,7 +50,7 @@ to authenticate a user, you need to inform your email and password
 
 ## Reservation
 
-to create a reservation, you need to be logged and inform your id, table id, and the date
+to create a reservation, you need to be logged (bearer token) and inform your id, table id, and the date
 
 **POST** `localhost:3000/reservation`
 
@@ -62,3 +62,8 @@ to create a reservation, you need to be logged and inform your id, table id, and
 }
 ```
 
+## Things to Implement
+
+- Admin panel
+- Better time checker
+- Tests
