@@ -23,7 +23,7 @@ docker compose up
 - you cannot reserve the table if you have any other reservation at the same time
 - we have 15 tables available in the system
 
-***All endpoints except create user and auth you must be logged in (bearer token)***
+***All endpoints except create user and auth, you must be logged in (bearer token)***
 
 ## User
 
