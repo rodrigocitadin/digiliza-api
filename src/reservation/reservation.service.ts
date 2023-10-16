@@ -4,7 +4,7 @@ import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { TableService } from 'src/table/table.service';
-import { ReturnReservationDto } from './dto/return-reservation.dto';
+import { ReturnReservationDto, returnReservationQuery } from './dto/return-reservation.dto';
 
 @Injectable()
 export class ReservationService {
@@ -13,14 +13,6 @@ export class ReservationService {
     private userService: UserService,
     private tableService: TableService
   ) { }
-
-  private returnReservation = {
-    id: true,
-    user_id: true,
-    table_id: true,
-    active: true,
-    date: true
-  }
 
   async create(createReservationDto: CreateReservationDto): Promise<ReturnReservationDto> {
     createReservationDto.date = new Date(createReservationDto.date);
@@ -39,7 +31,7 @@ export class ReservationService {
     try {
       const reservation = await this.prisma.reservation.create({
         data: createReservationDto,
-        select: this.returnReservation
+        select: returnReservationQuery
       })
 
       return reservation;
@@ -51,7 +43,7 @@ export class ReservationService {
 
   async findAll(): Promise<ReturnReservationDto[]> {
     const reservations = await this.prisma.reservation.findMany({
-      select: this.returnReservation
+      select: returnReservationQuery
     });
 
     return reservations;
@@ -60,7 +52,7 @@ export class ReservationService {
   async findById(id: string): Promise<ReturnReservationDto> {
     const reservation = await this.prisma.reservation.findFirst({
       where: { id },
-      select: this.returnReservation
+      select: returnReservationQuery
     })
 
     if (!reservation) throw new NotFoundException("Reservation not found");
@@ -89,7 +81,7 @@ export class ReservationService {
       const reservation = await this.prisma.reservation.update({
         where: { id },
         data: updateReservationDto,
-        select: this.returnReservation
+        select: returnReservationQuery
       })
 
       return reservation;

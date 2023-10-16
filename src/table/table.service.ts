@@ -2,16 +2,11 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
-import { ReturnTableDto } from './dto/return-table.dto';
+import { ReturnTableDto, returnTableQuery } from './dto/return-table.dto';
 
 @Injectable()
 export class TableService {
   constructor(private prisma: PrismaService) { }
-
-  private returnTable = {
-    id: true,
-    capacity: true
-  }
 
   async create(createTableDto: CreateTableDto): Promise<ReturnTableDto> {
     const tables = await this.findAll();
@@ -20,7 +15,7 @@ export class TableService {
     try {
       const table = await this.prisma.table.create({
         data: createTableDto,
-        select: this.returnTable
+        select: returnTableQuery
       })
 
       return table;
@@ -32,7 +27,7 @@ export class TableService {
 
   async findAll(): Promise<ReturnTableDto[]> {
     const tables = await this.prisma.table.findMany({
-      select: this.returnTable
+      select: returnTableQuery
     });
 
     return tables;
@@ -41,7 +36,7 @@ export class TableService {
   async findById(id: number): Promise<ReturnTableDto> {
     const table = await this.prisma.table.findFirst({
       where: { id },
-      select: this.returnTable
+      select: returnTableQuery
     })
 
     if (!table) throw new NotFoundException("Table not found");
@@ -56,7 +51,7 @@ export class TableService {
       const table = await this.prisma.table.update({
         where: { id },
         data: updateTableDto,
-        select: this.returnTable
+        select: returnTableQuery
       })
 
       return table;
