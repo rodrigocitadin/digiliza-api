@@ -66,7 +66,7 @@ to create a reservation, you need to be logged and inform your id, table id, and
 
 ## Things to Implement
 
-- Admin panel
-- Better time checker
-- Tests
-- Front-end
+- [ ] Admin panel
+- [ ] Better time checker
+- [ ] Tests
+- [ ] Front-end
