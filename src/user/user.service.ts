@@ -3,18 +3,12 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { ReturnUserDto } from './dto/return-user.dto';
+import { ReturnUserDto, returnUserQuery } from './dto/return-user.dto';
 import { User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) { }
-
-  private returnUser = {
-    id: true,
-    name: true,
-    email: true
-  }
 
   async create(createUserDto: CreateUserDto): Promise<ReturnUserDto> {
     const userAlreadyExists = await this.findByEmail(createUserDto.email);
@@ -26,7 +20,7 @@ export class UserService {
     try {
       const user = await this.prisma.user.create({
         data: createUserDto,
-        select: this.returnUser
+        select: returnUserQuery
       })
 
       return user;
@@ -38,7 +32,7 @@ export class UserService {
 
   async findAll(): Promise<ReturnUserDto[]> {
     const users = await this.prisma.user.findMany({
-      select: this.returnUser
+      select: returnUserQuery
     });
 
     return users;
@@ -47,7 +41,7 @@ export class UserService {
   async findById(id: string): Promise<ReturnUserDto> {
     const user = await this.prisma.user.findFirst({
       where: { id },
-      select: this.returnUser
+      select: returnUserQuery
     })
 
     if (!user) throw new NotFoundException("User not found");
@@ -69,7 +63,7 @@ export class UserService {
       const user = await this.prisma.user.update({
         where: { id },
         data: updateUserDto,
-        select: this.returnUser
+        select: returnUserQuery
       })
 
       return user;
